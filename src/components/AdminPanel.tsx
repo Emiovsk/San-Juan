@@ -39,15 +39,22 @@ async function serverAvailable(): Promise<boolean> {
 }
 
 // ─── Upload via API (VPS) ─────────────────────────────────────────────────
-async function uploadViaAPI(file: File): Promise<{ ok: boolean; fileName?: string; error?: string }> {
+async function uploadViaAPI(file: File, token: string): Promise<{ ok: boolean; fileName?: string; error?: string }> {
   const form = new FormData();
   form.append('file', file, file.name);
-  const res = await fetch('/api/upload', { method: 'POST', body: form });
+  const res = await fetch('/api/upload', { 
+    method: 'POST', 
+    headers: { 'x-admin-token': token },
+    body: form 
+  });
   return res.json();
 }
 
-async function deleteViaAPI(fileName: string): Promise<void> {
-  await fetch(`/api/docs/${encodeURIComponent(fileName)}`, { method: 'DELETE' }).catch(() => {});
+async function deleteViaAPI(fileName: string, token: string): Promise<void> {
+  await fetch(`/api/docs/${encodeURIComponent(fileName)}`, { 
+    method: 'DELETE',
+    headers: { 'x-admin-token': token }
+  }).catch(() => {});
 }
 
 // ─── Upload via Service Worker (local dev) ────────────────────────────────
@@ -80,6 +87,9 @@ export const AdminPanel: React.FC = () => {
   const [newNombre, setNewNombre] = useState('');
   const [newTelefono, setNewTelefono] = useState('');
   const [dirStatus, setDirStatus] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+
+  // Token de seguridad administrativo para la comunicación con la API de Express (VPS)
+  const ADMIN_TOKEN = 'TeitaAdmin2026#';
 
   useEffect(() => {
     loadInbox();
@@ -157,7 +167,7 @@ export const AdminPanel: React.FC = () => {
 
     if (hasServer) {
       // VPS mode: upload to real server
-      const result = await uploadViaAPI(currentFile);
+      const result = await uploadViaAPI(currentFile, ADMIN_TOKEN);
       ok = result.ok;
       if (!ok) setStatus({ type: 'error', msg: `❌ Error: ${result.error}` });
     } else {
@@ -178,8 +188,11 @@ export const AdminPanel: React.FC = () => {
   };
 
   const handleDeleteFile = async (obraId: string, docType: string, fileName: string) => {
-    if (hasServer) await deleteViaAPI(fileName);
-    else navigator.serviceWorker?.controller?.postMessage({ type: 'DELETE_FILE', name: fileName });
+    if (hasServer) {
+      await deleteViaAPI(fileName, ADMIN_TOKEN);
+    } else {
+      navigator.serviceWorker?.controller?.postMessage({ type: 'DELETE_FILE', name: fileName });
+    }
     removeFromLocalStorage(obraId, docType);
     setConfirmDelete(null);
     loadRegisteredFiles();
@@ -187,7 +200,7 @@ export const AdminPanel: React.FC = () => {
 
   const handleClearAll = async () => {
     if (hasServer) {
-      for (const rf of registeredFiles) await deleteViaAPI(rf.fileName);
+      for (const rf of registeredFiles) await deleteViaAPI(rf.fileName, ADMIN_TOKEN);
     } else {
       navigator.serviceWorker?.controller?.postMessage({ type: 'CLEAR_FILES' });
     }
@@ -284,6 +297,7 @@ export const AdminPanel: React.FC = () => {
     backgroundColor: 'rgba(220,50,50,0.08)', color: 'hsl(0,75%,50%)',
     fontFamily: 'var(--font-heading)',
   };
+
 
   return (
     <section className="site-section section-padding">

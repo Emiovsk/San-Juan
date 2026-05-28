@@ -13,6 +13,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ── Configuración de Seguridad Administrativa ──────────────────────────────
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'TeitaAdmin2026#';
+
+// Middleware para verificar la contraseña de administración
+const requireAdmin = (req, res, next) => {
+  const token = req.headers['x-admin-token'] || req.headers['authorization'];
+  if (token === ADMIN_PASSWORD) {
+    next();
+  } else {
+    res.status(401).json({ ok: false, error: 'Acceso denegado. Token administrativo inválido o ausente.' });
+  }
+};
+
 // ── Carpeta donde se guardan los PDFs ─────────────────────────────────────
 // En producción (VPS): dist/assets/docs/
 // Los archivos ahí son servidos directamente por Express como estáticos
@@ -47,8 +60,20 @@ const upload = multer({
   },
 });
 
+// ── API: Login Administrativo ─────────────────────────────────────────────
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === 'admin' && password === ADMIN_PASSWORD) {
+    console.log(`[Security] Login exitoso para el usuario 'admin'`);
+    res.json({ ok: true, token: ADMIN_PASSWORD });
+  } else {
+    console.warn(`[Security] Intento de login fallido para el usuario '${username || 'desconocido'}'`);
+    res.status(401).json({ ok: false, error: 'Usuario o contraseña incorrectos' });
+  }
+});
+
 // ── API: Subir PDF ────────────────────────────────────────────────────────
-app.post('/api/upload', upload.single('file'), (req, res) => {
+app.post('/api/upload', requireAdmin, upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ ok: false, error: 'No se recibió ningún archivo' });
   }
@@ -72,7 +97,7 @@ app.get('/api/docs', (_req, res) => {
 });
 
 // ── API: Eliminar PDF ─────────────────────────────────────────────────────
-app.delete('/api/docs/:name', (req, res) => {
+app.delete('/api/docs/:name', requireAdmin, (req, res) => {
   const safeName = path.basename(req.params.name); // Sanitize path traversal
   const filePath = path.join(DOCS_DIR, safeName);
   if (fs.existsSync(filePath)) {
