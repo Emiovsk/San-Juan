@@ -137,7 +137,7 @@ export const AdminPanel: React.FC = () => {
 
   const pickFile = (file: File) => {
     if (!file.name.toLowerCase().endsWith('.pdf')) {
-      setStatus({ type: 'error', msg: '❌ Solo se aceptan archivos PDF.' });
+      setStatus({ type: 'error', msg: 'Solo se aceptan archivos PDF.' });
       return;
     }
     setCurrentFile(file);
@@ -161,7 +161,7 @@ export const AdminPanel: React.FC = () => {
     e.preventDefault();
     if (!currentFile) return;
 
-    setStatus({ type: 'uploading', msg: '⏳ Subiendo archivo…' });
+    setStatus({ type: 'uploading', msg: 'Subiendo archivo...' });
 
     let ok = false;
 
@@ -169,18 +169,18 @@ export const AdminPanel: React.FC = () => {
       // VPS mode: upload to real server
       const result = await uploadViaAPI(currentFile, ADMIN_TOKEN);
       ok = result.ok;
-      if (!ok) setStatus({ type: 'error', msg: `❌ Error: ${result.error}` });
+      if (!ok) setStatus({ type: 'error', msg: `Error: ${result.error}` });
     } else {
       // Local dev mode: store in Service Worker / IndexedDB
       await navigator.serviceWorker?.ready;
       await new Promise(r => setTimeout(r, 200));
       ok = await uploadViaSW(currentFile);
-      if (!ok) setStatus({ type: 'error', msg: '❌ No se pudo guardar. Recarga e intenta de nuevo.' });
+      if (!ok) setStatus({ type: 'error', msg: 'No se pudo guardar. Recarga e intenta de nuevo.' });
     }
 
     if (ok) {
       saveToLocalStorage(selectedObra, selectedDocType, currentFile.name);
-      setStatus({ type: 'success', msg: `✅ "${currentFile.name}" publicado correctamente.` });
+      setStatus({ type: 'success', msg: `"${currentFile.name}" publicado correctamente.` });
       setCurrentFile(null);
       loadRegisteredFiles();
       setTimeout(() => setStatus(null), 6000);
@@ -244,7 +244,7 @@ export const AdminPanel: React.FC = () => {
   const handleAddComercio = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newNombre.trim() || !newTelefono.trim()) {
-      setDirStatus({ type: 'error', msg: '❌ Completa todos los campos.' });
+      setDirStatus({ type: 'error', msg: 'Completa todos los campos.' });
       return;
     }
     const nuevo = {
@@ -257,7 +257,7 @@ export const AdminPanel: React.FC = () => {
     setComercios(lista);
     setNewNombre('');
     setNewTelefono('');
-    setDirStatus({ type: 'success', msg: '✅ Comercio registrado exitosamente.' });
+    setDirStatus({ type: 'success', msg: 'Comercio registrado exitosamente.' });
     setTimeout(() => setDirStatus(null), 4000);
   };
 
@@ -279,7 +279,7 @@ export const AdminPanel: React.FC = () => {
     ];
     localStorage.setItem('teita_directorio_comercial', JSON.stringify(defaults));
     setComercios(defaults);
-    setDirStatus({ type: 'success', msg: '✅ Directorio restablecido a los valores por defecto.' });
+    setDirStatus({ type: 'success', msg: 'Directorio restablecido a los valores por defecto.' });
     setTimeout(() => setDirStatus(null), 4000);
   };
 
@@ -374,8 +374,8 @@ export const AdminPanel: React.FC = () => {
                 </h2>
                 <p style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
                   {hasServer
-                    ? '✅ En VPS — los archivos se guardan en el servidor permanentemente para todos los visitantes.'
-                    : '💻 En modo desarrollo local — los archivos se guardan en este navegador.'}
+                    ? 'En VPS — los archivos se guardan en el servidor permanentemente para todos los visitantes.'
+                    : 'En modo desarrollo local — los archivos se guardan en este navegador.'}
                 </p>
               </div>
 
@@ -412,7 +412,7 @@ export const AdminPanel: React.FC = () => {
                     <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm8.5 6.5H8v-1.5h12V16zm0-3H8v-1.5h12V13zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"/>
                   </svg>
                   <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text-bright)', marginBottom: '4px', fontFamily: 'var(--font-heading)' }}>
-                    {currentFile ? `📄 ${currentFile.name}` : 'Arrastra el PDF aquí'}
+                    {currentFile ? `Archivo PDF: ${currentFile.name}` : 'Arrastra el PDF aquí'}
                   </p>
                   <p style={{ fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
                     {currentFile ? `${(currentFile.size / 1024).toFixed(1)} KB — haz clic para cambiar` : 'o haz clic para seleccionarlo'}
@@ -443,7 +443,7 @@ export const AdminPanel: React.FC = () => {
                   style={{ border: 'none', alignSelf: 'flex-start', opacity: !currentFile || status?.type === 'uploading' ? 0.45 : 1, fontSize: '15px', padding: '14px 28px' }}
                   disabled={!currentFile || status?.type === 'uploading'}
                 >
-                  {status?.type === 'uploading' ? 'Subiendo…' : '☁️ Publicar documento'}
+                  {status?.type === 'uploading' ? 'Subiendo...' : 'Publicar documento'}
                 </button>
               </form>
 
@@ -486,7 +486,7 @@ export const AdminPanel: React.FC = () => {
                             </p>
                           </div>
                           {!confirming ? (
-                            <button onClick={() => setConfirmDelete(key)} style={delBtn}>🗑 Eliminar</button>
+                            <button onClick={() => setConfirmDelete(key)} style={delBtn}>Eliminar</button>
                           ) : (
                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
                               <span style={{ fontSize: '11.5px', color: 'hsl(0,70%,45%)', fontWeight: 600 }}>¿Seguro?</span>
@@ -541,8 +541,8 @@ export const AdminPanel: React.FC = () => {
                       <p style={{ fontSize: '14px', lineHeight: '1.6', marginBottom: '16px', color: 'var(--color-text-muted)', whiteSpace: 'pre-wrap' }}>{m.mensaje}</p>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderTop: '1px solid var(--color-border)', paddingTop: '14px', fontSize: '13px' }}>
                         <div style={{ display: 'flex', gap: '16px', color: 'var(--color-text-muted)', alignItems: 'center' }}>
-                          <span>📧 <b style={{ color: 'var(--color-text-bright)' }}>{m.email}</b></span>
-                          {m.telefono && <span>📞 <b style={{ color: 'var(--color-text-bright)' }}>{m.telefono}</b></span>}
+                          <span>Correo: <b style={{ color: 'var(--color-text-bright)' }}>{m.email}</b></span>
+                          {m.telefono && <span>Teléfono: <b style={{ color: 'var(--color-text-bright)' }}>{m.telefono}</b></span>}
                         </div>
                         <button onClick={() => handleDeleteMessage(m.id)} style={delBtn}>Eliminar</button>
                       </div>
@@ -566,7 +566,7 @@ export const AdminPanel: React.FC = () => {
                   </p>
                 </div>
                 <button onClick={handleResetComercios} style={{ ...delBtn, backgroundColor: 'rgba(134,98,67,0.06)', border: '1px solid var(--color-border)', color: 'var(--color-accent)', fontSize: '12px', padding: '8px 16px' }}>
-                  🔄 Restablecer predeterminados
+                  Restablecer predeterminados
                 </button>
               </div>
 
@@ -585,7 +585,7 @@ export const AdminPanel: React.FC = () => {
               {/* Form to add */}
               <form onSubmit={handleAddComercio} style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '32px', padding: '24px', borderRadius: '12px', border: '1px solid var(--color-border)', backgroundColor: '#FAFAFA' }}>
                 <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '15px', color: 'var(--color-text-bright)', margin: 0, fontWeight: 700 }}>
-                  ➕ Registrar Nuevo Comercio o Servicio
+                  Registrar Nuevo Comercio o Servicio
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: '16px', flexWrap: 'wrap' }}>
                   <div className="form-group" style={{ margin: 0 }}>
@@ -639,16 +639,21 @@ export const AdminPanel: React.FC = () => {
                         display: 'flex', alignItems: 'center', gap: '14px', padding: '12px 18px',
                         borderRadius: '8px', border: '1px solid var(--color-border)', backgroundColor: '#FFFFFF',
                       }}>
-                        <div style={{ fontSize: '20px', opacity: 0.8 }}>🏪</div>
+                        <svg viewBox="0 0 24 24" style={{ width: '20px', height: '20px', fill: 'var(--color-primary)', flexShrink: 0, opacity: 0.8 }}>
+                          <path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H5v-4h7v4z"/>
+                        </svg>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--color-text-bright)', fontFamily: 'var(--font-heading)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {c.nombre}
                           </p>
-                          <p style={{ fontSize: '12px', color: 'var(--color-primary-light)', fontWeight: 600, marginTop: '2px' }}>
-                            📞 {c.telefono}
+                          <p style={{ fontSize: '12px', color: 'var(--color-primary-light)', fontWeight: 600, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <svg viewBox="0 0 24 24" style={{ width: '12px', height: '12px', fill: 'currentColor' }}>
+                              <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                            </svg>
+                            {c.telefono}
                           </p>
                         </div>
-                        <button onClick={() => handleDeleteComercio(c.id)} style={delBtn}>🗑 Eliminar</button>
+                        <button onClick={() => handleDeleteComercio(c.id)} style={delBtn}>Eliminar</button>
                       </div>
                     ))}
                   </div>

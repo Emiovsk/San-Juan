@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ContactInfo {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   value: string;
   detail: string;
@@ -16,7 +16,11 @@ interface AtencionProps {
 export const Atencion: React.FC<AtencionProps> = ({ setTab }) => {
   const contactChannels: ContactInfo[] = [
     {
-      icon: '📞',
+      icon: (
+        <svg viewBox="0 0 24 24" style={{ width: '20px', height: '20px', fill: 'currentColor' }}>
+          <path d="M6.62 10.79a15.15 15.15 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.27 11.72 11.72 0 003.66.58 1 1 0 011 1v3.5a1 1 0 01-1 1A16 16 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.72 11.72 0 00.58 3.66 1 1 0 01-.27 1.11z"/>
+        </svg>
+      ),
       label: 'Teléfono Oficial',
       value: '(951) 123 4567',
       detail: 'Atención directa en la Secretaría Municipal para dudas y trámites.',
@@ -24,7 +28,11 @@ export const Atencion: React.FC<AtencionProps> = ({ setTab }) => {
       actionText: 'Llamar ahora'
     },
     {
-      icon: '📧',
+      icon: (
+        <svg viewBox="0 0 24 24" style={{ width: '20px', height: '20px', fill: 'currentColor' }}>
+          <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+        </svg>
+      ),
       label: 'Correo Electrónico',
       value: 'contacto@sanjuanteita.gob.mx',
       detail: 'Canal oficial para correspondencia y peticiones digitales formales.',
@@ -32,7 +40,11 @@ export const Atencion: React.FC<AtencionProps> = ({ setTab }) => {
       actionText: 'Enviar correo'
     },
     {
-      icon: '📍',
+      icon: (
+        <svg viewBox="0 0 24 24" style={{ width: '20px', height: '20px', fill: 'currentColor' }}>
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+      ),
       label: 'Dirección Física',
       value: 'Palacio Municipal S/N, Centro',
       detail: 'San Juan Teita, Distrito de Tlaxiaco, Oaxaca. C.P. 71000.',
@@ -77,6 +89,8 @@ export const Atencion: React.FC<AtencionProps> = ({ setTab }) => {
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
+                  color: 'var(--color-primary-light)',
+                  border: '1px solid rgba(0, 188, 212, 0.2)',
                   flexShrink: 0
                 }}>
                   {c.icon}
@@ -129,7 +143,7 @@ export const Atencion: React.FC<AtencionProps> = ({ setTab }) => {
               }}
             >
               <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '15px', fontWeight: 700, color: 'var(--color-text-bright)', marginBottom: '14px' }}>
-                ⏰ Horario General del Palacio Municipal
+                Horario General del Palacio Municipal
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px', color: 'var(--color-text-muted)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border)', paddingBottom: '6px' }}>
@@ -146,7 +160,7 @@ export const Atencion: React.FC<AtencionProps> = ({ setTab }) => {
                 </div>
               </div>
               <div style={{ marginTop: '20px', padding: '14px', borderRadius: '8px', backgroundColor: 'rgba(255, 112, 67, 0.05)', border: '1px solid rgba(255, 112, 67, 0.15)', fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
-                ⚠️ <b>Nota Comunitaria</b>: Los regidores y el cabildo atienden directamente previa cita en la Secretaría. Los días festivos locales (como el 24 de Junio) el Palacio Municipal permanecerá cerrado.
+                <b>Nota Comunitaria</b>: Los regidores y el cabildo atienden directamente previa cita en la Secretaría. Los días festivos locales (como el 24 de Junio) el Palacio Municipal permanecerá cerrado.
               </div>
             </div>
 
@@ -164,7 +178,7 @@ export const Atencion: React.FC<AtencionProps> = ({ setTab }) => {
               }}
             >
               <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', fontWeight: 700, color: 'var(--color-text-bright)' }}>
-                📬 ¿Tienes alguna queja, sugerencia o duda?
+                ¿Tienes alguna queja, sugerencia o duda?
               </h4>
               <p style={{ fontSize: '13.5px', color: 'var(--color-text-muted)', lineHeight: '1.6' }}>
                 Tu voz es importante para mejorar la comunidad. Envía un mensaje formal directamente a nuestro buzón en línea. El Cabildo dará seguimiento oportuno en sus sesiones.
@@ -180,7 +194,7 @@ export const Atencion: React.FC<AtencionProps> = ({ setTab }) => {
                   marginTop: '4px'
                 }}
               >
-                Ir al Buzón Ciudadano ✉️
+                Ir al Buzón Ciudadano
               </button>
             </div>
 

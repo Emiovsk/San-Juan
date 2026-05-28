@@ -104,7 +104,7 @@ export const Tramites: React.FC = () => {
 
               <div style={{ backgroundColor: '#FDFBF9', border: '1px dashed rgba(134, 98, 67, 0.2)', borderRadius: '10px', padding: '20px 24px', marginBottom: '20px' }}>
                 <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '14px', fontWeight: 700, color: 'var(--color-text-bright)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  📋 Requisitos necesarios:
+                  Requisitos necesarios:
                 </h4>
                 <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '20px', margin: 0 }}>
                   {t.requisitos.map((req, rIdx) => (
@@ -116,7 +116,7 @@ export const Tramites: React.FC = () => {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--color-text-muted)', flexWrap: 'wrap', gap: '10px' }}>
-                <span>⏱️ Tiempo de entrega estimado: <b>{t.tiempo}</b></span>
+                <span>Tiempo de entrega estimado: <b>{t.tiempo}</b></span>
                 <span style={{ color: 'var(--color-accent)', fontWeight: 500 }}>San Juan Teita, Oaxaca</span>
               </div>
             </div>
