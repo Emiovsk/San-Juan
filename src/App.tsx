@@ -7,6 +7,10 @@ import { Transparencia } from './components/Transparencia';
 import { Obras } from './components/Obras';
 import { Contacto } from './components/Contacto';
 import { AdminPanel } from './components/AdminPanel';
+import { AdminMunicipal } from './components/AdminMunicipal';
+import { Tramites } from './components/Tramites';
+import { Atencion } from './components/Atencion';
+import { DirectorioComercial } from './components/DirectorioComercial';
 
 const App: React.FC = () => {
   const [currentTab, setTab] = useState<string>('inicio');
@@ -48,7 +52,16 @@ const App: React.FC = () => {
       case 'inicio':
         return <Inicio setTab={setTab} />;
       case 'municipio':
+      case 'municipio-conoce':
         return <Municipio />;
+      case 'municipio-admin':
+        return <AdminMunicipal />;
+      case 'municipio-tramites':
+        return <Tramites />;
+      case 'municipio-atencion':
+        return <Atencion setTab={setTab} />;
+      case 'municipio-directorio':
+        return <DirectorioComercial />;
       case 'transparencia':
         return <Transparencia />;
       case 'obras':

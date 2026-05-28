@@ -63,7 +63,7 @@ async function uploadViaSW(file: File): Promise<boolean> {
 }
 
 export const AdminPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'files' | 'inbox'>('files');
+  const [activeTab, setActiveTab] = useState<'files' | 'inbox' | 'directorio'>('files');
   const [selectedObra, setSelectedObra] = useState('w1');
   const [selectedDocType, setSelectedDocType] = useState('contrato');
   const [messages, setMessages] = useState<CitizenMessage[]>([]);
@@ -75,9 +75,16 @@ export const AdminPanel: React.FC = () => {
   const [hasServer, setHasServer] = useState<boolean | null>(null); // null = checking
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+  // Estados para Directorio Comercial
+  const [comercios, setComercios] = useState<{ id: string; nombre: string; telefono: string }[]>([]);
+  const [newNombre, setNewNombre] = useState('');
+  const [newTelefono, setNewTelefono] = useState('');
+  const [dirStatus, setDirStatus] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+
   useEffect(() => {
     loadInbox();
     loadRegisteredFiles();
+    loadComercios();
     serverAvailable().then(setHasServer);
   }, []);
 
@@ -198,6 +205,71 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
+  const loadComercios = () => {
+    try {
+      const s = localStorage.getItem('teita_directorio_comercial');
+      if (!s) {
+        const defaults = [
+          { id: '1', nombre: 'Tejido de Sombreros Mixtecos - Artesanía en Palma (Fam. Santiago Mendoza)', telefono: '951 456 7890' },
+          { id: '2', nombre: 'Petates y Canastas "Teita" - Sra. Juana Gómez Ortiz', telefono: '953 112 4589' },
+          { id: '3', nombre: 'Abarrotes "La Mixteca" - Don Pedro Cruz', telefono: '951 889 1234' },
+          { id: '4', nombre: 'Ferretería y Materiales "San Juan" - Ing. Manuel Ruiz', telefono: '953 456 1223' },
+          { id: '5', nombre: 'Transporte Mixto y Fletes Teita - Sr. Antonio López', telefono: '951 777 5566' },
+          { id: '6', nombre: 'Panadería Tradicional "El Buen Trigo" - Sra. María Cruz Hernández', telefono: '953 234 5678' },
+          { id: '7', nombre: 'Carnicería y Miscelánea "La Bendición" - Don Esteban García', telefono: '951 333 4455' }
+        ];
+        localStorage.setItem('teita_directorio_comercial', JSON.stringify(defaults));
+        setComercios(defaults);
+      } else {
+        setComercios(JSON.parse(s));
+      }
+    } catch {
+      setComercios([]);
+    }
+  };
+
+  const handleAddComercio = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newNombre.trim() || !newTelefono.trim()) {
+      setDirStatus({ type: 'error', msg: '❌ Completa todos los campos.' });
+      return;
+    }
+    const nuevo = {
+      id: Date.now().toString(),
+      nombre: newNombre.trim(),
+      telefono: newTelefono.trim()
+    };
+    const lista = [...comercios, nuevo];
+    localStorage.setItem('teita_directorio_comercial', JSON.stringify(lista));
+    setComercios(lista);
+    setNewNombre('');
+    setNewTelefono('');
+    setDirStatus({ type: 'success', msg: '✅ Comercio registrado exitosamente.' });
+    setTimeout(() => setDirStatus(null), 4000);
+  };
+
+  const handleDeleteComercio = (id: string) => {
+    const lista = comercios.filter(c => c.id !== id);
+    localStorage.setItem('teita_directorio_comercial', JSON.stringify(lista));
+    setComercios(lista);
+  };
+
+  const handleResetComercios = () => {
+    const defaults = [
+      { id: '1', nombre: 'Tejido de Sombreros Mixtecos - Artesanía en Palma (Fam. Santiago Mendoza)', telefono: '951 456 7890' },
+      { id: '2', nombre: 'Petates y Canastas "Teita" - Sra. Juana Gómez Ortiz', telefono: '953 112 4589' },
+      { id: '3', nombre: 'Abarrotes "La Mixteca" - Don Pedro Cruz', telefono: '951 889 1234' },
+      { id: '4', nombre: 'Ferretería y Materiales "San Juan" - Ing. Manuel Ruiz', telefono: '953 456 1223' },
+      { id: '5', nombre: 'Transporte Mixto y Fletes Teita - Sr. Antonio López', telefono: '951 777 5566' },
+      { id: '6', nombre: 'Panadería Tradicional "El Buen Trigo" - Sra. María Cruz Hernández', telefono: '953 234 5678' },
+      { id: '7', nombre: 'Carnicería y Miscelánea "La Bendición" - Don Esteban García', telefono: '951 333 4455' }
+    ];
+    localStorage.setItem('teita_directorio_comercial', JSON.stringify(defaults));
+    setComercios(defaults);
+    setDirStatus({ type: 'success', msg: '✅ Directorio restablecido a los valores por defecto.' });
+    setTimeout(() => setDirStatus(null), 4000);
+  };
+
   // ── Styles ───────────────────────────────────────────────────────────────
   const tabBtn = (active: boolean): React.CSSProperties => ({
     fontFamily: 'var(--font-heading)', fontSize: '14px', fontWeight: 600,
@@ -245,6 +317,17 @@ export const AdminPanel: React.FC = () => {
               {messages.length > 0 && (
                 <span style={{ marginLeft: 'auto', background: 'var(--color-accent)', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '50px' }}>
                   {messages.length}
+                </span>
+              )}
+            </button>
+            <button onClick={() => setActiveTab('directorio')} style={tabBtn(activeTab === 'directorio')}>
+              <svg viewBox="0 0 24 24" style={{ width: '16px', height: '16px', fill: 'currentColor', flexShrink: 0 }}>
+                <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-7H7v2h7v-2zm-3 4H7v2h4v-2z"/>
+              </svg>
+              Directorio Comercial
+              {comercios.length > 0 && (
+                <span style={{ marginLeft: 'auto', background: 'var(--color-accent)', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '50px' }}>
+                  {comercios.length}
                 </span>
               )}
             </button>
@@ -453,6 +536,110 @@ export const AdminPanel: React.FC = () => {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ══ TAB: DIRECTORIO ══ */}
+          {activeTab === 'directorio' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '16px', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', color: 'var(--color-text-bright)', marginBottom: '4px' }}>
+                    Directorio de Comercios Locales
+                  </h2>
+                  <p style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
+                    Administra los negocios de San Juan Teita que se muestran en el sitio público.
+                  </p>
+                </div>
+                <button onClick={handleResetComercios} style={{ ...delBtn, backgroundColor: 'rgba(134,98,67,0.06)', border: '1px solid var(--color-border)', color: 'var(--color-accent)', fontSize: '12px', padding: '8px 16px' }}>
+                  🔄 Restablecer predeterminados
+                </button>
+              </div>
+
+              {/* Status */}
+              {dirStatus && (
+                <div style={{
+                  marginBottom: '20px', padding: '12px 16px', borderRadius: '8px', fontSize: '13.5px', fontWeight: 600,
+                  backgroundColor: dirStatus.type === 'success' ? 'rgba(0,180,100,0.08)' : 'rgba(220,50,50,0.08)',
+                  border: `1px solid ${dirStatus.type === 'success' ? 'rgba(0,180,100,0.25)' : 'rgba(220,50,50,0.25)'}`,
+                  color: dirStatus.type === 'success' ? 'hsl(150,70%,30%)' : 'hsl(0,70%,45%)',
+                }}>
+                  {dirStatus.msg}
+                </div>
+              )}
+
+              {/* Form to add */}
+              <form onSubmit={handleAddComercio} style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '32px', padding: '24px', borderRadius: '12px', border: '1px solid var(--color-border)', backgroundColor: '#FAFAFA' }}>
+                <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '15px', color: 'var(--color-text-bright)', margin: 0, fontWeight: 700 }}>
+                  ➕ Registrar Nuevo Comercio o Servicio
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: '16px', flexWrap: 'wrap' }}>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" htmlFor="business-name-input">Nombre / Comercio o Servicio</label>
+                    <input
+                      id="business-name-input"
+                      type="text"
+                      className="form-select"
+                      style={{ padding: '10px 14px', borderRadius: '6px', border: '1px solid var(--color-border)', fontSize: '14px', backgroundColor: '#fff' }}
+                      placeholder="Ej: Abarrotes 'La Espiga' - Don Luis"
+                      value={newNombre}
+                      onChange={(e) => setNewNombre(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" htmlFor="business-phone-input">Teléfono(s)</label>
+                    <input
+                      id="business-phone-input"
+                      type="text"
+                      className="form-select"
+                      style={{ padding: '10px 14px', borderRadius: '6px', border: '1px solid var(--color-border)', fontSize: '14px', backgroundColor: '#fff' }}
+                      placeholder="Ej: 951 123 4567"
+                      value={newTelefono}
+                      onChange={(e) => setNewTelefono(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="btn-premium btn-primary"
+                  style={{ border: 'none', alignSelf: 'flex-start', fontSize: '13px', padding: '10px 20px', marginTop: '4px' }}
+                >
+                  Registrar Comercio
+                </button>
+              </form>
+
+              {/* List of registered businesses */}
+              <div>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', color: 'var(--color-text-bright)', marginBottom: '14px' }}>
+                  Comercios registrados ({comercios.length})
+                </h3>
+
+                {comercios.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px dashed var(--color-border)', borderRadius: '10px', color: 'var(--color-text-muted)', fontSize: '13.5px' }}>
+                    No hay comercios registrados en este momento. Usa el formulario de arriba o presiona el botón para restablecer los valores de demostración.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {comercios.map((c) => (
+                      <div key={c.id} style={{
+                        display: 'flex', alignItems: 'center', gap: '14px', padding: '12px 18px',
+                        borderRadius: '8px', border: '1px solid var(--color-border)', backgroundColor: '#FFFFFF',
+                      }}>
+                        <div style={{ fontSize: '20px', opacity: 0.8 }}>🏪</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--color-text-bright)', fontFamily: 'var(--font-heading)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {c.nombre}
+                          </p>
+                          <p style={{ fontSize: '12px', color: 'var(--color-primary-light)', fontWeight: 600, marginTop: '2px' }}>
+                            📞 {c.telefono}
+                          </p>
+                        </div>
+                        <button onClick={() => handleDeleteComercio(c.id)} style={delBtn}>🗑 Eliminar</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

@@ -101,15 +101,41 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Desktop Navigation */}
             <nav className="nav-desktop">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  className={`nav-link ${currentTab === tab.id ? 'active' : ''}`}
-                  onClick={() => handleTabClick(tab.id)}
-                >
-                  {tab.label}
-                </button>
-              ))}
+              {tabs.map((tab) => {
+                if (tab.id === 'municipio') {
+                  const isMunicipioActive = currentTab.startsWith('municipio-');
+                  return (
+                    <div key={tab.id} className="nav-dropdown-container">
+                      <button
+                        className={`nav-link dropdown-toggle ${isMunicipioActive ? 'active' : ''}`}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                      >
+                        {tab.label}
+                        <svg viewBox="0 0 24 24" className="dropdown-arrow-icon">
+                          <path d="M7 10l5 5 5-5z"/>
+                        </svg>
+                      </button>
+                      <div className="dropdown-menu">
+                        <button className="dropdown-item" onClick={() => handleTabClick('municipio-conoce')}>Conócelo</button>
+                        <button className="dropdown-item" onClick={() => handleTabClick('municipio-admin')}>Administración Municipal</button>
+                        <button className="dropdown-item" onClick={() => handleTabClick('municipio-tramites')}>Trámites</button>
+                        <button className="dropdown-item" onClick={() => handleTabClick('municipio-atencion')}>Atención Ciudadanía</button>
+                        <button className="dropdown-item" onClick={() => handleTabClick('municipio-directorio')}>Directorio Comercial</button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <button
+                    key={tab.id}
+                    className={`nav-link ${currentTab === tab.id ? 'active' : ''}`}
+                    onClick={() => handleTabClick(tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
             </nav>
 
             {/* Mobile Menu Button */}
@@ -124,15 +150,37 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Mobile Navigation Panel */}
           <nav className={`nav-mobile ${mobileMenuOpen ? 'active' : ''}`}>
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                className={`nav-link-mobile ${currentTab === tab.id ? 'active' : ''}`}
-                onClick={() => handleTabClick(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
+            {tabs.map((tab) => {
+              if (tab.id === 'municipio') {
+                const isMunicipioActive = currentTab.startsWith('municipio-');
+                return (
+                  <div key={tab.id} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                    <div 
+                      className={`nav-link-mobile ${isMunicipioActive ? 'active' : ''}`}
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pointerEvents: 'none', opacity: 0.85 }}
+                    >
+                      <span>{tab.label}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: '16px', borderLeft: '2px solid var(--color-border)', margin: '4px 0 8px 12px', gap: '2px' }}>
+                      <button className={`nav-link-mobile-sub ${currentTab === 'municipio-conoce' ? 'active' : ''}`} onClick={() => handleTabClick('municipio-conoce')}>Conócelo</button>
+                      <button className={`nav-link-mobile-sub ${currentTab === 'municipio-admin' ? 'active' : ''}`} onClick={() => handleTabClick('municipio-admin')}>Administración Municipal</button>
+                      <button className={`nav-link-mobile-sub ${currentTab === 'municipio-tramites' ? 'active' : ''}`} onClick={() => handleTabClick('municipio-tramites')}>Trámites</button>
+                      <button className={`nav-link-mobile-sub ${currentTab === 'municipio-atencion' ? 'active' : ''}`} onClick={() => handleTabClick('municipio-atencion')}>Atención Ciudadanía</button>
+                      <button className={`nav-link-mobile-sub ${currentTab === 'municipio-directorio' ? 'active' : ''}`} onClick={() => handleTabClick('municipio-directorio')}>Directorio Comercial</button>
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <button
+                  key={tab.id}
+                  className={`nav-link-mobile ${currentTab === tab.id ? 'active' : ''}`}
+                  onClick={() => handleTabClick(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
             {isAdminMode && (
               <button
                 className={`nav-link-mobile ${currentTab === 'admin' ? 'active' : ''}`}
