@@ -1,0 +1,50 @@
+FRACT_0: Fracción I ||| El marco normativo aplicable al sujeto obligado, en el que deberá incluirse leyes, códigos, reglamentos, decretos de creación, manuales administrativos, reglas de operación, criterios, políticas, entre otros;
+FRACT_1: Fracción II ||| Su estructura orgánica completa, en un formato que permita vincular cada parte de la estructura, las atribuciones y responsabilidades que le corresponden a cada servidor público, prestador de servicios profesionales o miembro de los sujetos obligados, de conformidad con las disposiciones aplicables;
+FRACT_2: Fracción III ||| Las facultades de cada Área;
+FRACT_3:  ||| Bando de Policia
+FRACT_4: Fracción IV ||| Las metas y objetivos de las Áreas de conformidad con sus programas operativos;
+FRACT_5: Fracción V ||| Los indicadores relacionados con temas de interés público o trascendencia social que conforme a sus funciones, deban establecer;
+FRACT_6: Fracción VI ||| Los indicadores que permitan rendir cuenta de sus objetivos y resultados;
+FRACT_7: Fracción VII ||| El directorio de todos los Servidores Públicos, a partir del nivel de jefe de departamento o su equivalente, o de menor nivel, cuando se brinde atención al público; manejen o apliquen recursos públicos; realicen actos de autoridad o presten servicios profesionales bajo el régimen de confianza u honorarios y personal de base. El directorio deberá incluir, al menos el nombre, cargo o nombramiento asignado, nivel del puesto en la estructura orgánica, fecha de alta en el cargo, número telefónico, domicilio para recibir correspondencia y dirección de correo electrónico oficiales;
+FRACT_8: Fracción VIII ||| La remuneración bruta y neta de todos los Servidores Públicos de base o de confianza, de todas las percepciones, incluyendo sueldos, prestaciones, gratificaciones, primas, comisiones, dietas, bonos, estímulos, ingresos y sistemas de compensación, señalando la periodicidad de dicha remuneración;
+FRACT_9: Fracción IX ||| Los gastos de representación y viáticos, así como el objeto e informe de comisión correspondiente;
+FRACT_10: Fracción X ||| El número total de las plazas y del personal de base y confianza, especificando el total de las vacantes, por nivel de puesto, para cada unidad administrativa;
+FRACT_11: Fracción XI ||| Las contrataciones de servicios profesionales por honorarios, señalando los nombres de los prestadores de servicios, los servicios contratados, el monto de los honorarios y el periodo de contratación;
+FRACT_12: Fracción XII ||| La información en Versión Pública de las declaraciones patrimoniales de los Servidores Públicos que así lo determinen, en los sistemas habilitados para ello, de acuerdo a la normatividad aplicable;
+FRACT_13: Fracción XIII ||| El domicilio de la Unidad de Transparencia, además de la dirección electrónica donde podrán recibirse las solicitudes para obtener la información;
+FRACT_14: Fracción XIV ||| Las convocatorias a concursos para ocupar cargos públicos y los resultados de los mismos;
+FRACT_15: Fracción XV ||| La información de los programas de subsidios, estímulos y apoyos, en el que se deberá informar respecto de los programas de transferencia, de servicios, de infraestructura social y de subsidio, en los que se deberá contener lo siguiente:
+FRACT_16: Fracción XVI ||| Las condiciones generales de trabajo, contratos o convenios que regulen las relaciones laborales del personal de base o de confianza, así como los recursos públicos económicos, en especie o donativos, que sean entregados a los sindicatos y ejerzan como recursos públicos;
+FRACT_17: Fracción XVII ||| La información curricular, desde el nivel de jefe de departamento o equivalente, hasta el titular del sujeto obligado, así como, en su caso, las sanciones administrativas de que haya sido objeto;
+FRACT_18: Fracción XVIII ||| El listado de Servidores Públicos con sanciones administrativas definitivas, especificando la causa de sanción y la disposición;
+FRACT_19: Fracción XIX ||| Los servicios que ofrecen señalando los requisitos para acceder a ellos;
+FRACT_20: Fracción XX ||| Los trámites, requisitos y formatos que ofrecen;
+FRACT_21: Fracción XXI ||| La información financiera sobre el presupuesto asignado, así como los informes del ejercicio trimestral del gasto, en términos de la Ley General de Contabilidad Gubernamental y demás normatividad aplicable;
+FRACT_22: Fracción XXII ||| La información relativa a la deuda pública, en términos de la normatividad aplicable;
+FRACT_23: Fracción XXIII ||| Los montos destinados a gastos relativos a comunicación social y publicidad oficial desglosada por tipo de medio, proveedores, número de contrato y concepto o campaña;
+FRACT_24: Fracción XXIV ||| Los informes de resultados de las auditorías al ejercicio presupuestal de cada sujeto obligado que se realicen y, en su caso, las aclaraciones que correspondan;
+FRACT_25: Fracción XXV ||| El resultado de la dictaminación de los estados financieros;
+FRACT_26: Fracción XXVI ||| Los montos, criterios, convocatorias y listado de personas físicas o morales a quienes, por cualquier motivo, se les asigne o permita usar recursos públicos o, en los términos de las disposiciones aplicables, realicen actos de autoridad. Asimismo, los informes que dichas personas les entreguen sobre el uso y destino de dichos recursos.
+FRACT_27: Fracción XXVII ||| Las concesiones, contratos, convenios, permisos, licencias o autorizaciones otorgados, especificando los titulares de aquéllos, debiendo publicarse su objeto, nombre o razón social del titular, vigencia, tipo, términos, condiciones, monto y modificaciones, así como si el procedimiento involucra el aprovechamiento de bienes, servicios y/o recursos públicos.,
+FRACT_28: Fracción XXVIII ||| La información sobre los resultados sobre procedimientos de adjudicación directa, invitación restringida y licitación de cualquier naturaleza, incluyendo la Versión Pública del Expediente respectivo y de los contratos celebrados, que deberá contener, por lo menos, lo siguiente:…
+FRACT_29: Fracción XXIX ||| Los informes que por disposición legal generen los sujetos obligados;
+FRACT_30: Fracción XXX ||| Las estadísticas que generen en cumplimiento de sus facultades, competencias o funciones con la mayor desagregación posible;
+FRACT_31: Fracción XXXI ||| Informe de avances programáticos o presupuestales, balances generales y su estado financiero;
+FRACT_32: Fracción XXXII ||| Padrón de proveedores y contratistas;
+FRACT_33:  ||| Padron de contratistas
+FRACT_34: Fracción XXXIII ||| Los convenios de coordinación de concertación con los sectores social y privado;
+FRACT_35: Fracción XXXIV ||| El inventario de bienes muebles e inmuebles en posesión y propiedad;
+FRACT_36: Fracción XXXV ||| Las recomendaciones emitidas por los órganos públicos del Estado mexicano u organismos internacionales garantes de los derechos humanos, así como las acciones que han llevado a cabo para su atención;
+FRACT_37: Fracción XXXVI ||| Las resoluciones y laudos que se emitan en procesos o procedimientos seguidos en forma de juicio;
+FRACT_38: Fracción XXXVII ||| Los mecanismos de participación ciudadana;
+FRACT_39: Fracción XXXVIII ||| Los programas que ofrecen, incluyendo información sobre la población, objetivo y destino, así como los trámites, tiempos de respuesta, requisitos y formatos para acceder a los mismos;
+FRACT_40: Fracción XXXIX ||| Las actas y resoluciones del Comité de Transparencia de los sujetos obligados;
+FRACT_41: Fracción XL ||| Todas las evaluaciones y encuestas que hagan los sujetos obligados a programas financiados con recursos públicos;
+FRACT_42: Fracción XLI ||| Los estudios financiados con recursos públicos;
+FRACT_43: Fracción XLII ||| El listado de jubilados y pensionados y el monto que reciben;
+FRACT_44: Fracción XLIII ||| Los ingresos recibidos por cualquier concepto señalando el nombre de los responsables de recibirlos, administrarlos y ejercerlos, así como su destino, indicando el destino de cada uno de ellos;
+FRACT_45: Fracción XLIV ||| Donaciones hechas a terceros en dinero o en especie;
+FRACT_46: Fracción XLV ||| El catálogo de disposición y guía de archivo documental;
+FRACT_47: Fracción XLVI ||| Las actas de sesiones ordinarias y extraordinarias, así como las opiniones y recomendaciones que emitan, en su caso, los consejos consultivos;
+FRACT_48: Fracción XLVII ||| Para efectos estadísticos, el listado de solicitudes a las empresas concesionarias de telecomunicaciones y proveedores de servicios ocasiones de Internet para la intervención de comunicaciones privadas, el acceso al registro de comunicaciones y la localización geográfica en tiempo real de equipos de comunicación, que contenga exclusivamente el objeto, el alcance temporal y los fundamentos legales del requerimiento, así como, en su caso, la mención de que cuenta con la autorización judicial correspondiente, y
+FRACT_49: Fracción XLVIII ||| Cualquier otra información que sea de utilidad o se considere relevante, además de la que, con base en la información estadística, responda a las preguntas hechas con más frecuencia por el público.

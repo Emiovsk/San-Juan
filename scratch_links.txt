@@ -1,0 +1,34 @@
+Found 31 hyperlinks:
+Link: tel:+529512201667 | Text: 📞
+                            951 220 1667
+Link: mailto:contacto@sansebastianteitipac.gob.mx | Text: ✉️
+                            contacto@sansebastianteitipac.gob.mx
+Link: index.php | Text: 
+Link: index.php | Text: Inicio
+Link: municipio.php | Text: Conocelo
+Link: administracion.php | Text: Administración Municipal
+Link: tramites.php | Text: Tramites
+Link: atencionciudadana.php | Text: Atención Ciudadanía
+Link: directoriocomercial.php | Text: Directorio Comercial
+Link: # | Text: Ley Federal ▸
+Link: articulo70.php | Text: Articulo 70
+Link: articulo71.php | Text: Articulo 71
+Link: # | Text: Ley Estatal ▸
+Link: articulo30.php | Text: Articulo 30
+Link: informacionfinanciera.php | Text: Información Financiera
+Link: leyingreso.php | Text: Ley de Ingresos
+Link: presupuestoegreso.php | Text: Presupuesto de Egresos
+Link: gaceta.php | Text: Gaceta Municipal
+Link: ejercicio2026.php | Text: Ejercicio 2026
+Link: noticias.php | Text: Noticias
+Link: contacto.php | Text: Contacto
+Link: index.html | Text: Inicio
+Link: gobierno.html | Text: Gobierno
+Link: tramites.html | Text: Trámites
+Link: transparencia.html | Text: Transparencia
+Link: turismo.html | Text: Turismo
+Link: contacto.html | Text: Contacto
+Link: gobierno.php | Text: Gobierno Municipal
+Link: tramites.php | Text: Trámites y Servicios
+Link: transparencia.php | Text: Transparencia
+Link: turismo.php | Text: Inversion Publica
