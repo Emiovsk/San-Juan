@@ -9,33 +9,43 @@ interface WorkItem {
 
 export const Obras: React.FC = () => {
   const [docsConfig, setDocsConfig] = useState<any>({});
+  const [works, setWorks] = useState<WorkItem[]>([]);
 
-  // Load uploaded files from LocalStorage on mount
+  // Load works list and uploaded files from LocalStorage on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('teita_obras_docs');
-      if (stored) {
-        setDocsConfig(JSON.parse(stored));
+      // Cargar catálogo de obras
+      const storedWorks = localStorage.getItem('teita_obras_lista');
+      if (storedWorks) {
+        setWorks(JSON.parse(storedWorks));
+      } else {
+        const defaults = [
+          {
+            id: 'w1',
+            title: 'Obra 1: Rehabilitación de Red de Agua Potable en la Zona Centro',
+            category: 'Agua y Saneamiento',
+            status: 'Concluida',
+          },
+          {
+            id: 'w2',
+            title: 'Obra 2: Pavimentación con Concreto Hidráulico en Calle de Acceso Escolar',
+            category: 'Urbanización',
+            status: 'En Proceso',
+          },
+        ];
+        localStorage.setItem('teita_obras_lista', JSON.stringify(defaults));
+        setWorks(defaults);
+      }
+
+      // Cargar configuración de archivos publicados
+      const storedDocs = localStorage.getItem('teita_obras_docs');
+      if (storedDocs) {
+        setDocsConfig(JSON.parse(storedDocs));
       }
     } catch (err) {
-      console.error('Error loading documents configuration:', err);
+      console.error('Error loading works or documents configuration:', err);
     }
   }, []);
-
-  const works: WorkItem[] = [
-    {
-      id: 'w1',
-      title: 'Obra 1: Rehabilitación de Red de Agua Potable en la Zona Centro',
-      category: 'Agua y Saneamiento',
-      status: 'Concluida',
-    },
-    {
-      id: 'w2',
-      title: 'Obra 2: Pavimentación con Concreto Hidráulico en Calle de Acceso Escolar',
-      category: 'Urbanización',
-      status: 'En Proceso',
-    },
-  ];
 
   // Helper to get custom or default document names
   const getDocName = (obraId: string, docType: string, defaultName: string) => {

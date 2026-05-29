@@ -18,10 +18,13 @@ interface RegisteredFile {
   fileName: string;
 }
 
-const OBRA_LABELS: Record<string, string> = {
-  w1: 'Obra 1: Agua Potable Centro',
-  w2: 'Obra 2: Pavimentación Escuela',
-};
+interface Work {
+  id: string;
+  title: string;
+  category: string;
+  status: string;
+}
+
 const DOC_TYPE_LABELS: Record<string, string> = {
   contrato: 'Contrato de Obra',
   acta: 'Acta Entrega Recepción',
@@ -70,7 +73,7 @@ async function uploadViaSW(file: File): Promise<boolean> {
 }
 
 export const AdminPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'files' | 'inbox' | 'directorio'>('files');
+  const [activeTab, setActiveTab] = useState<'files' | 'inbox' | 'directorio' | 'obras'>('files');
   const [selectedObra, setSelectedObra] = useState('w1');
   const [selectedDocType, setSelectedDocType] = useState('contrato');
   const [messages, setMessages] = useState<CitizenMessage[]>([]);
@@ -88,11 +91,23 @@ export const AdminPanel: React.FC = () => {
   const [newTelefono, setNewTelefono] = useState('');
   const [dirStatus, setDirStatus] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
+  // Estados para Catálogo de Obras
+  const [works, setWorks] = useState<Work[]>([]);
+  const [newWorkTitle, setNewWorkTitle] = useState('');
+  const [newWorkCategory, setNewWorkCategory] = useState('Agua y Saneamiento');
+  const [newWorkStatus, setNewWorkStatus] = useState('En Proceso');
+  const [editingWorkId, setEditingWorkId] = useState<string | null>(null);
+  const [editWorkTitle, setEditWorkTitle] = useState('');
+  const [editWorkCategory, setEditWorkCategory] = useState('');
+  const [editWorkStatus, setEditWorkStatus] = useState('');
+  const [worksStatus, setWorksStatus] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+
   // Token de seguridad administrativo para la comunicación con la API de Express (VPS)
   const ADMIN_TOKEN = 'TeitaAdmin2026#';
 
   useEffect(() => {
     loadInbox();
+    loadWorks();
     loadRegisteredFiles();
     loadComercios();
     serverAvailable().then(setHasServer);
@@ -103,15 +118,55 @@ export const AdminPanel: React.FC = () => {
     setMessages(s ? JSON.parse(s) : []);
   };
 
-  const loadRegisteredFiles = () => {
+  const loadWorks = () => {
+    try {
+      const s = localStorage.getItem('teita_obras_lista');
+      if (!s) {
+        const defaults = [
+          { id: 'w1', title: 'Obra 1: Rehabilitación de Red de Agua Potable en la Zona Centro', category: 'Agua y Saneamiento', status: 'Concluida' },
+          { id: 'w2', title: 'Obra 2: Pavimentación con Concreto Hidráulico en Calle de Acceso Escolar', category: 'Urbanización', status: 'En Proceso' }
+        ];
+        localStorage.setItem('teita_obras_lista', JSON.stringify(defaults));
+        setWorks(defaults);
+        if (defaults.length > 0) setSelectedObra(defaults[0].id);
+      } else {
+        const list = JSON.parse(s);
+        setWorks(list);
+        if (list.length > 0) setSelectedObra(list[0].id);
+      }
+    } catch {
+      setWorks([]);
+    }
+  };
+
+  const loadRegisteredFiles = (currentWorks: Work[] = works) => {
     try {
       const s = localStorage.getItem('teita_obras_docs');
       if (!s) { setRegisteredFiles([]); return; }
       const cfg = JSON.parse(s) as Record<string, Record<string, string>>;
       const list: RegisteredFile[] = [];
+      
+      // Intentar cargar obras de localStorage para tener etiquetas frescas si currentWorks está vacío
+      let activeWorks = currentWorks;
+      if (activeWorks.length === 0) {
+        const osStr = localStorage.getItem('teita_obras_lista');
+        if (osStr) activeWorks = JSON.parse(osStr);
+      }
+
       for (const oid of Object.keys(cfg))
-        for (const dt of Object.keys(cfg[oid]))
-          if (cfg[oid][dt]) list.push({ obraId: oid, obraLabel: OBRA_LABELS[oid] || oid, docType: dt, docTypeLabel: DOC_TYPE_LABELS[dt] || dt, fileName: cfg[oid][dt] });
+        for (const dt of Object.keys(cfg[oid])) {
+          if (cfg[oid][dt]) {
+            const w = activeWorks.find(item => item.id === oid);
+            const label = w ? w.title : oid;
+            list.push({ 
+              obraId: oid, 
+              obraLabel: label, 
+              docType: dt, 
+              docTypeLabel: DOC_TYPE_LABELS[dt] || dt, 
+              fileName: cfg[oid][dt] 
+            });
+          }
+        }
       setRegisteredFiles(list);
     } catch { setRegisteredFiles([]); }
   };
@@ -146,8 +201,14 @@ export const AdminPanel: React.FC = () => {
     if (n.includes('acta') || n.includes('entrega') || n.includes('recep')) setSelectedDocType('acta');
     else if (n.includes('foto') || n.includes('reporte')) setSelectedDocType('fotos');
     else setSelectedDocType('contrato');
-    if (n.includes('pavim') || n.includes('calle') || n.includes('escuela') || n.includes('w2')) setSelectedObra('w2');
-    else setSelectedObra('w1');
+    
+    // Buscar obra coincidente dinámicamente basándose en el nombre del archivo
+    const matched = works.find(w => 
+      n.includes(w.id.toLowerCase()) || 
+      w.title.toLowerCase().split(/\s+/).some(word => word.length > 4 && n.includes(word))
+    );
+    if (matched) setSelectedObra(matched.id);
+    else if (works.length > 0) setSelectedObra(works[0].id);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -283,6 +344,84 @@ export const AdminPanel: React.FC = () => {
     setTimeout(() => setDirStatus(null), 4000);
   };
 
+  // Métodos CRUD para Catálogo de Obras
+  const handleAddWork = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newWorkTitle.trim() || !newWorkCategory.trim()) {
+      setWorksStatus({ type: 'error', msg: 'Completa todos los campos.' });
+      return;
+    }
+    const nuevoId = 'w_' + Date.now();
+    const nuevaObra: Work = {
+      id: nuevoId,
+      title: newWorkTitle.trim(),
+      category: newWorkCategory.trim(),
+      status: newWorkStatus
+    };
+    const lista = [...works, nuevaObra];
+    localStorage.setItem('teita_obras_lista', JSON.stringify(lista));
+    setWorks(lista);
+    setNewWorkTitle('');
+    setNewWorkCategory('Agua y Saneamiento');
+    setNewWorkStatus('En Proceso');
+    setWorksStatus({ type: 'success', msg: 'Obra agregada exitosamente al catálogo.' });
+    setTimeout(() => setWorksStatus(null), 4000);
+  };
+
+  const handleUpdateWork = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingWorkId || !editWorkTitle.trim() || !editWorkCategory.trim()) {
+      setWorksStatus({ type: 'error', msg: 'Completa todos los campos.' });
+      return;
+    }
+    const lista = works.map(w => 
+      w.id === editingWorkId 
+        ? { ...w, title: editWorkTitle.trim(), category: editWorkCategory.trim(), status: editWorkStatus }
+        : w
+    );
+    localStorage.setItem('teita_obras_lista', JSON.stringify(lista));
+    setWorks(lista);
+    setEditingWorkId(null);
+    setWorksStatus({ type: 'success', msg: 'Obra actualizada correctamente.' });
+    loadRegisteredFiles(lista); // Recargar archivos registrados con etiquetas actualizadas
+    setTimeout(() => setWorksStatus(null), 4000);
+  };
+
+  const handleDeleteWork = (id: string) => {
+    const lista = works.filter(w => w.id !== id);
+    localStorage.setItem('teita_obras_lista', JSON.stringify(lista));
+    setWorks(lista);
+    
+    // Limpiar documentos asociados de esa obra en teita_obras_docs
+    try {
+      const s = localStorage.getItem('teita_obras_docs');
+      if (s) {
+        const cfg = JSON.parse(s);
+        if (cfg[id]) {
+          delete cfg[id];
+          localStorage.setItem('teita_obras_docs', JSON.stringify(cfg));
+        }
+      }
+    } catch {}
+    
+    loadRegisteredFiles(lista);
+    if (selectedObra === id && lista.length > 0) {
+      setSelectedObra(lista[0].id);
+    }
+  };
+
+  const handleResetWorks = () => {
+    const defaults = [
+      { id: 'w1', title: 'Obra 1: Rehabilitación de Red de Agua Potable en la Zona Centro', category: 'Agua y Saneamiento', status: 'Concluida' },
+      { id: 'w2', title: 'Obra 2: Pavimentación con Concreto Hidráulico en Calle de Acceso Escolar', category: 'Urbanización', status: 'En Proceso' }
+    ];
+    localStorage.setItem('teita_obras_lista', JSON.stringify(defaults));
+    setWorks(defaults);
+    loadRegisteredFiles(defaults);
+    setWorksStatus({ type: 'success', msg: 'Catálogo de obras restablecido a los valores por defecto.' });
+    setTimeout(() => setWorksStatus(null), 4000);
+  };
+
   // ── Styles ───────────────────────────────────────────────────────────────
   const tabBtn = (active: boolean): React.CSSProperties => ({
     fontFamily: 'var(--font-heading)', fontSize: '14px', fontWeight: 600,
@@ -342,6 +481,17 @@ export const AdminPanel: React.FC = () => {
               {comercios.length > 0 && (
                 <span style={{ marginLeft: 'auto', background: 'var(--color-accent)', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '50px' }}>
                   {comercios.length}
+                </span>
+              )}
+            </button>
+            <button onClick={() => setActiveTab('obras')} style={tabBtn(activeTab === 'obras')}>
+              <svg viewBox="0 0 24 24" style={{ width: '16px', height: '16px', fill: 'currentColor', flexShrink: 0 }}>
+                <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm10 12h-8v-2h8v2zm0-4h-8v-2h8v2zm0-4h-8V9h8v2zm0-4h-8V5h8v2zm4 12h-2v-2h2v2zm0-4h-2v-2h2v2z"/>
+              </svg>
+              Catálogo de Obras
+              {works.length > 0 && (
+                <span style={{ marginLeft: 'auto', background: 'var(--color-accent)', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '50px' }}>
+                  {works.length}
                 </span>
               )}
             </button>
@@ -423,8 +573,11 @@ export const AdminPanel: React.FC = () => {
                   <div className="form-group">
                     <label className="form-label" htmlFor="obra-select">Obra</label>
                     <select id="obra-select" className="form-select" value={selectedObra} onChange={(e) => setSelectedObra(e.target.value)}>
-                      <option value="w1">Obra 1: Agua Potable Centro</option>
-                      <option value="w2">Obra 2: Pavimentación Escuela</option>
+                      {works.map((w) => (
+                        <option key={w.id} value={w.id}>
+                          {w.title}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div className="form-group">
@@ -654,6 +807,156 @@ export const AdminPanel: React.FC = () => {
                           </p>
                         </div>
                         <button onClick={() => handleDeleteComercio(c.id)} style={delBtn}>Eliminar</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ══ TAB: CATÁLOGO DE OBRAS ══ */}
+          {activeTab === 'obras' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '16px', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', color: 'var(--color-text-bright)', marginBottom: '4px' }}>
+                    Catálogo de Obras Municipales
+                  </h2>
+                  <p style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
+                    Administra los proyectos de infraestructura del ayuntamiento que se visualizan en el portal público.
+                  </p>
+                </div>
+                <button onClick={handleResetWorks} style={{ ...delBtn, backgroundColor: 'rgba(134,98,67,0.06)', border: '1px solid var(--color-border)', color: 'var(--color-accent)', fontSize: '12px', padding: '8px 16px' }}>
+                  Restablecer predeterminadas
+                </button>
+              </div>
+
+              {/* Status */}
+              {worksStatus && (
+                <div style={{
+                  marginBottom: '20px', padding: '12px 16px', borderRadius: '8px', fontSize: '13.5px', fontWeight: 600,
+                  backgroundColor: worksStatus.type === 'success' ? 'rgba(0,180,100,0.08)' : 'rgba(220,50,50,0.08)',
+                  border: `1px solid ${worksStatus.type === 'success' ? 'rgba(0,180,100,0.25)' : 'rgba(220,50,50,0.25)'}`,
+                  color: worksStatus.type === 'success' ? 'hsl(150,70%,30%)' : 'hsl(0,70%,45%)',
+                }}>
+                  {worksStatus.msg}
+                </div>
+              )}
+
+              {/* Form to add or edit */}
+              <form onSubmit={editingWorkId ? handleUpdateWork : handleAddWork} style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '32px', padding: '24px', borderRadius: '12px', border: '1px solid var(--color-border)', backgroundColor: '#FAFAFA' }}>
+                <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '15px', color: 'var(--color-text-bright)', margin: 0, fontWeight: 700 }}>
+                  {editingWorkId ? 'Editar Obra Municipal' : 'Registrar Nueva Obra Municipal'}
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px 180px', gap: '16px', flexWrap: 'wrap' }}>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" htmlFor="work-title-input">Nombre / Descripción de la Obra</label>
+                    <input
+                      id="work-title-input"
+                      type="text"
+                      className="form-select"
+                      style={{ padding: '10px 14px', borderRadius: '6px', border: '1px solid var(--color-border)', fontSize: '14px', backgroundColor: '#fff' }}
+                      placeholder="Ej: Obra 3: Techado de la Cancha Municipal"
+                      value={editingWorkId ? editWorkTitle : newWorkTitle}
+                      onChange={(e) => editingWorkId ? setEditWorkTitle(e.target.value) : setNewWorkTitle(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" htmlFor="work-category-input">Categoría</label>
+                    <input
+                      id="work-category-input"
+                      type="text"
+                      className="form-select"
+                      style={{ padding: '10px 14px', borderRadius: '6px', border: '1px solid var(--color-border)', fontSize: '14px', backgroundColor: '#fff' }}
+                      placeholder="Ej: Urbanización"
+                      value={editingWorkId ? editWorkCategory : newWorkCategory}
+                      onChange={(e) => editingWorkId ? setEditWorkCategory(e.target.value) : setNewWorkCategory(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" htmlFor="work-status-input">Estado</label>
+                    <select
+                      id="work-status-input"
+                      className="form-select"
+                      style={{ padding: '10px 14px', borderRadius: '6px', border: '1px solid var(--color-border)', fontSize: '14px', backgroundColor: '#fff' }}
+                      value={editingWorkId ? editWorkStatus : newWorkStatus}
+                      onChange={(e) => editingWorkId ? setEditWorkStatus(e.target.value) : setNewWorkStatus(e.target.value)}
+                    >
+                      <option value="Concluida">Concluida</option>
+                      <option value="En Proceso">En Proceso</option>
+                    </select>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    type="submit"
+                    className="btn-premium btn-primary"
+                    style={{ border: 'none', fontSize: '13px', padding: '10px 20px' }}
+                  >
+                    {editingWorkId ? 'Actualizar Obra' : 'Registrar Obra'}
+                  </button>
+                  {editingWorkId && (
+                    <button
+                      type="button"
+                      className="btn-premium"
+                      style={{ border: '1px solid var(--color-border)', backgroundColor: 'transparent', color: 'var(--color-text-muted)', fontSize: '13px', padding: '10px 20px' }}
+                      onClick={() => setEditingWorkId(null)}
+                    >
+                      Cancelar
+                    </button>
+                  )}
+                </div>
+              </form>
+
+              {/* List of registered works */}
+              <div>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', color: 'var(--color-text-bright)', marginBottom: '14px' }}>
+                  Obras registradas ({works.length})
+                </h3>
+
+                {works.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px dashed var(--color-border)', borderRadius: '10px', color: 'var(--color-text-muted)', fontSize: '13.5px' }}>
+                    No hay obras registradas en este momento. Usa el formulario de arriba o presiona el botón para restablecer las obras por defecto.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {works.map((w) => (
+                      <div key={w.id} style={{
+                        display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 20px',
+                        borderRadius: '8px', border: '1px solid var(--color-border)', backgroundColor: '#FFFFFF',
+                      }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-bright)', fontFamily: 'var(--font-heading)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
+                            {w.title}
+                          </p>
+                          <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', margin: 0, marginTop: '2px' }}>
+                            Categoría: <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>{w.category}</span> · Estado: <span style={{ 
+                              color: w.status === 'Concluida' ? 'hsl(140, 70%, 35%)' : 'hsl(40, 90%, 40%)', 
+                              fontWeight: 700,
+                              backgroundColor: w.status === 'Concluida' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              fontSize: '11px',
+                              display: 'inline-block',
+                              marginLeft: '4px'
+                            }}>{w.status}</span>
+                          </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button
+                            onClick={() => {
+                              setEditingWorkId(w.id);
+                              setEditWorkTitle(w.title);
+                              setEditWorkCategory(w.category);
+                              setEditWorkStatus(w.status);
+                            }}
+                            style={{ ...delBtn, backgroundColor: 'rgba(0,188,212,0.06)', border: '1px solid rgba(0,188,212,0.2)', color: 'var(--color-primary)' }}
+                          >
+                            Editar
+                          </button>
+                          <button onClick={() => handleDeleteWork(w.id)} style={delBtn}>Eliminar</button>
+                        </div>
                       </div>
                     ))}
                   </div>
